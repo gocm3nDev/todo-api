@@ -2,7 +2,12 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
 
-router.get('/sign-up', userController.registerUserGet);
-router.post('/sign-up', userController.registerUserPost);
+router.get('/register', userController.registerUserGet);
+router.post('/register', userController.registerUserPost);
 
-module.exports = router;// frontend ejs
+// endpoints to check input data
+router.post('/check-username', userController.checkUsername);
+router.post('/check-email', userController.checkEmail);
+
+
+module.exports = router;
