@@ -1,23 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>todoToDo - Organize Your Life</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <title>todo2Do - Organize Your Life</title>
+
+    <%- include('partials/head.ejs') %>
+
     <link rel="stylesheet" href="/styles/main.css">
 </head>
+
 <body>
     <%- include('partials/navbar.ejs') %>
 
-    <div class="hero-section">
-        <div class="hero-content">
-            <h1>Get Things Done</h1>
-            <p>The simplest way to organize your tasks and boost productivity</p>
-            <button class="btn btn-light cta-button">Get Started Free</button>
-        </div>
-    </div>
+    <%- include('partials/landing-page.ejs') %>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

@@ -7,7 +7,8 @@ app.use(express.json());
 
 exports.hashPassword = async (password) => {
     try {
-        const hash = await bcrypt.hash(password, process.env.SALT_ROUNDS || 12);
+        const saltRounds = parseInt(process.env.SALT_ROUNDS, 10) || 12;
+        const hash = await bcrypt.hash(password, saltRounds);
         return hash;
     } catch (err) {
         console.log(err);

@@ -1,0 +1,98 @@
+:root {
+    --page-bg: #f8f9fa;
+    --card-bg: #fdf0e9;
+    --brand-dark: #3a5053;
+    --brand-yellow-shadow: #f5b942;
+    --brand-blue-ice: #a0d6e8;
+    --border-radius-main: 1.25rem;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--page-bg);
+}
+
+.navbar-floating-container {
+    margin-top: 1.5rem;
+}
+.navbar-custom {
+    background-color: var(--card-bg);
+
+    border: 3px solid var(--brand-dark);
+    border-radius: var(--border-radius-main);
+    box-shadow: 8px 8px 0px var(--brand-yellow-shadow);
+
+    padding: 1rem 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.navbar-custom .navbar-brand {
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--brand-dark);
+    transition: transform 0.3s ease;
+}
+
+.navbar-custom .navbar-brand:hover {
+    transform: scale(1.03);
+}
+
+.navbar-custom .navbar-brand strong {
+    font-weight: 700;
+    color: var(--brand-blue-ice);
+}
+
+.navbar-custom .navbar-toggler {
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+.navbar-custom .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(58, 80, 83, 0.8)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+.btn-custom-outline,
+.btn-custom-primary {
+    border-radius: 50px;
+    font-weight: 600;
+    padding: 8px 20px;
+    border: 2px solid var(--brand-dark);
+    transition: all 0.3s ease;
+}
+
+.btn-custom-outline {
+    background-color: transparent;
+    color: var(--brand-dark);
+}
+
+.btn-custom-outline:hover {
+    background-color: var(--brand-dark);
+    color: var(--card-bg);
+    border-color: var(--brand-dark);
+}
+
+.btn-custom-primary {
+    background-color: var(--brand-blue-ice);
+    color: var(--brand-dark);
+    border-color: var(--brand-dark);
+}
+
+.btn-custom-primary:hover {
+    background-color: #8abccf;
+    border-color: var(--brand-dark);
+    color: var(--brand-dark);
+}
+@media (max-width: 991.98px) {
+    .navbar-custom .navbar-nav {
+        margin-top: 1rem;
+        width: 100%;
+    }
+
+    .navbar-custom .nav-item {
+        width: 100%;
+    }
+
+    .navbar-custom .nav-item .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
