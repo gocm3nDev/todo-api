@@ -19,6 +19,16 @@ const User = {
             throw err;
         }
     },
+    getUserById: async (id) => {
+        try {
+            const res = await pool.query(`SELECT * FROM public."users" WHERE id=$1`, [id]);
+            if (res.rows.length > 0) { return res.rows[0]; }
+            else { return null; }
+        } catch (err) {
+            console.log(`DB indexing error. Error: ${err}`);
+            throw err;
+        }
+    },
 }
 
 module.exports = User;

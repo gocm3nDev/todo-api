@@ -1,0 +1,31 @@
+<nav class="navbar">
+    <div class="profile-menu">
+        <div class="profile-toggle" id="profileToggle">
+            <% const shortName = user && user.username ? user.username.slice(0,3) : 'USR'; %>
+            <img src="https://placehold.co/80x80/bb9af7/1a1b26?text=<%= shortName %>" alt="Profile" class="profile-pic">
+            <span class="username"><%= user.username %></span>
+            <i class="fa-solid fa-chevron-down" style="font-size: 0.8rem; color: var(--brand-text-darker);"></i>
+        </div>
+
+        <div class="profile-dropdown" id="profileDropdown">
+            <div class="dropdown-header">
+                <h5><%= user.username %></h5>
+                <p><%= user.email %></p>
+            </div>
+            <ul class="dropdown-nav">
+                <li>
+                    <a href="#">
+                        <i class="fa-solid fa-user-edit"></i>
+                        <span>Edit Profile</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="" id="logOutButton" class="logout">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

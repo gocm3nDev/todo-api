@@ -37,28 +37,47 @@ exports.signinUserPost = async (req, res) => {
         const { username, password } = req.body;
         const foundUser = await model.getUserByUsername(username);
 
-        if (!foundUser) { return res.status(401).json({ 'res': 'Invalid' }); }
-        
+        if (!foundUser) return res.status(401).json({ res: 'Invalid' });
+
         const isMatch = await hasher.comparePassword(password, foundUser.password_hash);
+        if (!isMatch) return res.status(401).json({ res: 'Invalid' });
 
-        if (!isMatch) { return res.status(401).json({ 'res': 'Invalid' }); }
+        const payload = { id: foundUser.id, username: foundUser.username };
 
-        const payload = {
-            id: foundUser.id,
-            username: foundUser.username
-        };
+        const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1w' });
 
-        const token = jwt.sign(
-            payload,
-            process.env.JWT_SECRET,
-            { expiresIn: '1w' }
-        )
+        res.cookie('authToken', token, {
+            httpOnly: true,
+            maxAge: 604800000, // 1w
+            secure: process.env.NODE_ENV === 'production'
+        });
 
-        return res.status(200).json({ 'res': 'Success', token: token });
+        res.redirect('/user/profile');
     } catch (err) {
         console.log(`User sign in error. Error: ${err}`);
-        res.status(500).json({ 'res': 'I.S.E.' }); // Internal server error
+        res.status(500).json({ res: 'I.S.E.' });
     }
+};
+
+
+exports.openProfile = async (req, res) => {
+    const userId = req.user.id;
+    const user = await model.getUserById(userId);
+
+    if (!user) { return res.status(404).json({ res: 'User not found' }) }
+
+    res.render('user/dashboard', { user: user });
+}
+
+exports.logOut = async (req, res) => {
+    res.cookie('authToken', '', {
+        httpOnly: true,
+        expires: new Date(0),
+        path: '/',
+        secure: process.env.NODE_ENV === 'production'
+    });
+
+    res.redirect('/');
 }
 
 exports.checkUsername = async (req, res) => {

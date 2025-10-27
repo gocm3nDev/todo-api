@@ -19,6 +19,10 @@ const signIn = async (e) => {
         if (response.ok) {
             SignInAlert.textContent = 'Login successful';
             SignInAlert.style.color = 'green';
+
+            setTimeout(() => {
+                window.location.href = '/user/profile';
+            }, 2000);
         } else {
             SignInAlert.textContent = 'Invalid username or password';
             SignInAlert.style.color = 'red';
