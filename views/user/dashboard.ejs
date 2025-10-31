@@ -6,88 +6,98 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <%- include('../partials/head.ejs') %>
-    <link rel="stylesheet" href="/styles/dashboard.css">
+        <link rel="stylesheet" href="/styles/dashboard.css">
+        <link rel="stylesheet" href="/styles/todo.css">
 </head>
 
 <body>
 
-    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
-
+    <div class="sidebar-overlay"></div>
     <button id="toggle-sidebar">
         <i class="fa-solid fa-bars"></i>
     </button>
 
-    <%- include('../partials/user-sidebar.ejs') %>
+    <%- include('../partials/user-sidebar.ejs', { currentPage: page, lists: lists }) %>
 
-    <%- include('../partials/user-navbar.ejs') %>
+        <%- include('../partials/user-navbar.ejs') %>
 
-    <main class="main-content">
-        <div class="content-card">
-            <h1>Welcome, <%= user.username %></h1>
-            <p>
-                Burası ana içerik alanıdır. "Title" sekmesine tıkladığınızda bu alanı profil ayarlarıyla
-                doldurabilirsiniz.
-                "Todos" için bir yapılacaklar listesi uygulaması veya "Settings" için genel uygulama ayarları burada
-                gösterilebilir.
-                <br><br>
-                Tasarım, istediğiniz "retro" hissi vermek için sert gölgeler ve kenarlıklar kullanır, ancak "midnight"
-                renk paletiyle modern ve karanlık bir temaya sahiptir.
-            </p>
-        </div>
+            <main class="main-content">
+                <% if (page==='todos' ) { %>
+                    <%- include('./todos-content.ejs', { todos: todos }) %>
+                        <% } else if (page==='dashboard' ) { %>
+                            <%- include('./dashboard-content.ejs') %>
+                                <% } else { %>
+                                    <%- include('err_pages/404.ejs') %>
+                                        <% } %>
+            </main>
 
-        <div class="content-card" style="margin-top: 2rem;">
-            <h2>Proje İlerlemesi</h2>
-            <p>Buraya başka bir içerik kartı gelebilir...</p>
-        </div>
-    </main>
+            <script src="/scripts/logout.js" defer></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
 
-    <script src="../../scripts/logout.js"></script>
-    <script>
-        const profileToggle = document.getElementById('profileToggle');
-        const profileDropdown = document.getElementById('profileDropdown');
+                    const profileToggle = document.getElementById('profileToggle');
+                    const profileDropdown = document.getElementById('profileDropdown');
+                    if (profileToggle && profileDropdown) {
+                        profileToggle.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            profileDropdown.classList.toggle('show');
+                        });
+                        document.addEventListener('click', (e) => {
+                            if (!profileToggle.contains(e.target) && !profileDropdown.contains(e.target)) {
+                                profileDropdown.classList.remove('show');
+                            }
+                        });
+                    }
 
-        profileToggle.addEventListener('click', () => {
-            profileDropdown.classList.toggle('show');
-        });
+                    const sidebarToggle = document.getElementById('toggle-sidebar');
+                    const sidebarOverlay = document.querySelector('.sidebar-overlay');
+                    const body = document.body;
+                    function toggleSidebar() {
+                        body.classList.toggle('sidebar-open');
+                    }
+                    if (sidebarToggle) {
+                        sidebarToggle.addEventListener('click', toggleSidebar);
+                    }
+                    if (sidebarOverlay) {
+                        sidebarOverlay.addEventListener('click', toggleSidebar);
+                    }
+                    const listForm = document.getElementById('listSelectionForm');
+                    const todoGrid = document.getElementById('todo-grid');
 
-        window.addEventListener('click', function (e) {
-            if (!profileToggle.contains(e.target) && !profileDropdown.contains(e.target)) {
-                profileDropdown.classList.remove('show');
-            }
-        });
+                    if (listForm && todoGrid) {
+                        listForm.addEventListener('change', async (e) => {
+                            if (e.target.type !== 'radio') return;
 
-        const navLinks = document.querySelectorAll('.nav-link');
+                            const selectedList = e.target.value;
 
-        navLinks.forEach(link => {
-            link.addEventListener('click', function (e) {
+                            try {
+                                const res = await fetch(`/todo/my-todos?filter=${encodeURIComponent(selectedList)}`, {
+                                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                                });
+                                if (!res.ok) {
+                                    todoGrid.innerHTML = '<p>Error: Lists could not loaded.</p>';
+                                    return;
+                                }
+                                const html = await res.text();
+                                todoGrid.innerHTML = html;
+                            } catch (err) {
+                                console.error(`Fetch hatası: ${err}`);
+                            }
+                        });
+                    }
 
-                navLinks.forEach(l => l.classList.remove('active'));
-
-                this.classList.add('active');
-            });
-        });
-
-        const toggleButton = document.getElementById('toggle-sidebar');
-        const sidebar = document.getElementById('sidebar');
-
-        function toggleSidebar() {
-            document.body.classList.toggle('sidebar-open');
-        }
-
-        toggleButton.addEventListener('click', (e) => {
-            e.stopPropagation();
-            toggleSidebar();
-        });
-
-        document.querySelector('.sidebar-overlay').addEventListener('click', toggleSidebar);
-
-        sidebar.addEventListener('click', (e) => {
-            if (window.innerWidth <= 992 && e.target.closest('a')) {
-                toggleSidebar();
-            }
-        });
-
-    </script>
+                    if (todoGrid) {
+                        todoGrid.addEventListener('change', (e) => {
+                            if (e.target.classList.contains('todo-checkbox')) {
+                                const card = e.target.closest('.todo-card');
+                                if (card) {
+                                    card.classList.toggle('completed', e.target.checked);
+                                }
+                            }
+                        });
+                    }
+                });
+            </script>
 </body>
 
 </html>

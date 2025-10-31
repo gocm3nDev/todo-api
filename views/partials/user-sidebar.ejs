@@ -1,18 +1,18 @@
 <aside class="sidebar" id="sidebar">
     <a href="" style="user-select: none;" class="sidebar-logo">
         <i class="fa-solid fa-ghost"></i>
-        <span>RetroDash</span>
+        <span>todo2Do</span>
     </a>
 
     <ul class="sidebar-nav">
         <li class="nav-item">
-            <a href="#" class="nav-link active">
+            <a href="/user/dashboard" class="nav-link <%= (currentPage === 'dashboard') ? 'active' : '' %>">
                 <i class="fa-solid fa-house-chimney"></i>
                 <span>Dashboard</span>
             </a>
         </li>
         <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="/user/my-todos" class="nav-link <%= (currentPage === 'todos') ? 'active' : '' %>">
                 <i class="fa-solid fa-list-check"></i>
                 <span>Todos</span>
             </a>
@@ -20,19 +20,11 @@
         <li class="nav-item">
             <a href="#" class="nav-link">
                 <i class="fa-solid fa-message"></i>
-                <span>Mesajlar</span>
+                <span>Messages</span>
             </a>
         </li>
-
         <li class="nav-item">
-            <span class="nav-title">Hesap</span>
-        </li>
-
-        <li class="nav-item">
-            <a href="#" class="nav-link">
-                <i class="fa-solid fa-user-gear"></i>
-                <span>Title (Profil)</span>
-            </a>
+            <span class="nav-title">Account</span>
         </li>
         <li class="nav-item">
             <a href="#" class="nav-link">

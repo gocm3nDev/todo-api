@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const model = require('../model/userModel');
+const todoModel = require('../model/todoModel');
 const hasher = require('../public/scripts/hasher');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
@@ -12,7 +13,7 @@ app.use(express.json());
 
 // User registeration processes
 exports.registerUserGet = async (req, res) => {
-    res.render('register');
+    res.render('register', { user: req.user });
 };
 
 exports.registerUserPost = async (req, res) => {
@@ -29,7 +30,7 @@ exports.registerUserPost = async (req, res) => {
 
 // User sign in processes
 exports.signinUserGet = async (req, res) => {
-    res.render('signin');
+    res.render('signin', { user: req.user });
 }
 
 exports.signinUserPost = async (req, res) => {
@@ -52,7 +53,7 @@ exports.signinUserPost = async (req, res) => {
             secure: process.env.NODE_ENV === 'production'
         });
 
-        res.redirect('/user/profile');
+        res.redirect('/user/dashboard');
     } catch (err) {
         console.log(`User sign in error. Error: ${err}`);
         res.status(500).json({ res: 'I.S.E.' });
@@ -63,10 +64,12 @@ exports.signinUserPost = async (req, res) => {
 exports.openProfile = async (req, res) => {
     const userId = req.user.id;
     const user = await model.getUserById(userId);
+    const todos = await todoModel.getAllTodos(userId);
+    const lists = await todoModel.getAllLists(userId);
 
     if (!user) { return res.status(404).json({ res: 'User not found' }) }
 
-    res.render('user/dashboard', { user: user });
+    res.render('user/dashboard', { user: user, todos: todos, lists: lists, page:'dashboard' });
 }
 
 exports.logOut = async (req, res) => {
@@ -102,4 +105,8 @@ exports.checkEmail = async (req, res) => {
         console.log(`An error occured while checking if email exists in db. please check the userController. Error: ${err}`);
         res.status(500).json({ 'error': err });
     }
+};
+
+exports.loadIndex = async (req, res) => {
+    res.render('index', { user: req.user });
 };

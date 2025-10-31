@@ -1,0 +1,42 @@
+<div class="task-sidebar-overlay task-sidebar-overlay"></div>
+<button id="taskToggleSidebar" class="fa-solid fa-bars"></button>
+
+<aside class="task-sidebar" id="taskSidebar">
+    <a class="task-sidebar-logo" href="/">
+        <i class="fa-solid fa-check-double"></i>
+        <span>List Manager</span>
+    </a>
+
+    <form id="listSelectionForm">
+        <ul class="task-sidebar-nav">
+            <li class="task-nav-item">
+                <input type="radio" id="list-all-todos" name="getSelectedList" value="allTodos"
+                    class="list-radio-input"
+                <%= (typeof activeList==='undefined' || activeList==='allTodos' ) ? 'checked' : '' %>
+                    />
+
+                    <label for="list-all-todos" class="task-nav-link">
+                        <i class="fa-solid fa-inbox"></i>
+                        <span>All Todos</span>
+                    </label>
+            </li>
+
+
+            <% lists.forEach(list=> { %>
+                <li class="task-nav-item">
+                    <input type="radio" id="list-<%= list.replace(/\s/g, '-') %>" name="getSelectedList"
+                        value="<%= list %>" class="list-radio-input"
+                    <%= (typeof activeList !=='undefined' && activeList===list) ? 'checked' : '' %>
+                        />
+
+                        <label for="list-<%= list.replace(/\s/g, '-') %>" class="task-nav-link">
+                            <i class="fa-solid fa-star"></i>
+                            <span>
+                                <%= list %>
+                            </span>
+                        </label>
+                </li>
+                <% }) %>
+        </ul>
+    </form>
+</aside>

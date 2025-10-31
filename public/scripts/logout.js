@@ -13,7 +13,9 @@ if (logOutButton) {
             });
 
             if (response.ok) {
-                window.location.href = '/';
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 1000);
             } else {
                 console.error('Logout failed');
                 logOutButton.classList.remove('disabled');

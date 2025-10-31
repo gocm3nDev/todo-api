@@ -2,11 +2,79 @@ const pool = require('../data/db');
 
 const Todo = {
     getAllTodos: async (user_id) => {
-        const res = pool.query(`SELECT * FROM public."todos" WHERE user_id=$1 ORDER BY id ASC`, [user_id]);
-        return (await res).rows;
+        try {
+            if (user_id === undefined || user_id === null) {
+                throw new Error("user_id is undefined or null");
+            }
+
+            const result = await pool.query(
+                `SELECT * FROM public."todos" WHERE user_id=$1 ORDER BY todo_id ASC`,
+                [user_id]
+            );
+
+            return result.rows;
+        } catch (err) {
+            console.error(`Error in getAllTodos (Model): ${err.message}`);
+            throw err;
+        }
     },
-    removeTodo: async (id) => {
-        const res = pool.query(`DELETE FROM public."todos" WHERE id=$1`, [id]);
-        return (await res).rows;
+    getTodoById: async (todo_id) => {
+        try {
+            const res = pool.query(`SELECT * FROM public."todos" WHERE todo_id=$1`, [todo_id]);
+            return (await res).rows[0];
+        } catch (err) {
+            console.log(`Error: ${err}`);
+        }
+    },
+    removeTodo: async (todo_id) => {
+        try {
+            const res = pool.query(`UPDATE public."todos" SET isActive=false WHERE todo_id=$1`, [todo_id]);
+            return (await res).rows;
+        } catch (err) {
+            console.log(`Error: ${err}`);
+        }
+    },
+    addTodo: async ({ user_id, title, description, status, priority, due_date, isActive = true }) => {
+        try {
+            const res = await pool.query(
+                `INSERT INTO public."todos" 
+                (user_id, title, description, status, priority, due_date, isActive)
+                VALUES ($1, $2, $3, $4, $5, $6, $7)
+                RETURNING *;`,
+                [user_id, title, description, status, priority, due_date, isActive]
+            );
+
+            return res.rows[0];
+        } catch (err) {
+            console.error(`Error adding todo: ${err}`);
+            throw err;
+        }
+    },
+    getAllLists: async (user_id) => {
+        try {
+            const result = await pool.query(`
+                SELECT ARRAY_AGG(DISTINCT list) AS lists
+                FROM public."todos"
+                WHERE user_id = $1
+            `, [user_id]);
+
+            const lists = result.rows[0].lists;
+            return lists;
+        } catch (err) {
+            console.error(`Error getting list: ${err}`);
+            throw err;
+        }
+    },
+    getTodosByList: async (user_id, list) => {
+        try {
+            const result = await pool.query(`SELECT * FROM public."todos" WHERE user_id=$1 AND list=$2`, [user_id, list]);
+
+            return result.rows;
+        } catch (err) {
+            console.error(`Error while getting todos. Error: ${err}`);
+            throw err;
+        }
     }
 }
+
+module.exports = Todo;

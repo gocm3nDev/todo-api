@@ -8,7 +8,8 @@
 
     <%- include('partials/head.ejs') %>
 
-        <link rel="stylesheet" href="../styles/signin.css">
+    <link rel="stylesheet" href="../styles/signin.css">
+    <link rel="stylesheet" href="/styles/profile_section.css">
 </head>
 
 <body>
@@ -20,11 +21,13 @@
                     <h2>Welcome Back</h2>
                     <form id="form">
                         <div class="input-group mb-3">
-                            <input type="text" id="username" name="username" class="form-control" placeholder="Username" required>
+                            <input type="text" id="username" name="username" class="form-control" placeholder="Username"
+                                required>
                         </div>
 
                         <div class="input-group mb-3">
-                            <input type="password" id="passwd" name="passwd" class="form-control" placeholder="Password" required>
+                            <input type="password" id="passwd" name="passwd" class="form-control" placeholder="Password"
+                                required>
                             <span class="input-group-text" id="togglePasswordBtn">
                                 <i class="bi bi-eye-slash"></i>
                             </span>
@@ -43,6 +46,8 @@
         </main>
 
         <script src="../scripts/signinController.js"></script>
+        <script src="../scripts/profileSection.js"></script>
+        <script src="../scripts/logout.js"></script>
         <script>
             const togglePasswordBtn = document.getElementById('togglePasswordBtn');
             const passwordInput = document.getElementById('passwd');

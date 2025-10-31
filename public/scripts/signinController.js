@@ -21,7 +21,7 @@ const signIn = async (e) => {
             SignInAlert.style.color = 'green';
 
             setTimeout(() => {
-                window.location.href = '/user/profile';
+                window.location.href = '/user/dashboard';
             }, 2000);
         } else {
             SignInAlert.textContent = 'Invalid username or password';

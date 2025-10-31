@@ -1,0 +1,12 @@
+<%- include('../partials/todo-sidebar.ejs', { lists: lists }) %>
+
+<div class="content-header mt-4">
+    <button class="btn-add-todo">
+        <i class="fa-solid fa-plus"></i>
+        <span>New Todo</span>
+    </button>
+</div>
+
+<div class="todo-grid" id="todo-grid">
+    <%- include('../user/list-todos.ejs') %>
+</div>
