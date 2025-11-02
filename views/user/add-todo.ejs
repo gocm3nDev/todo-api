@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Todo</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        :root {
+            --primary-bg-color: #1a1a2e;
+            --sidebar-bg-color: #161625;
+            --card-bg-color: #1e1e3f;
+            --border-color: #3a3a5e;
+            --input-bg-color: #1a1a2e;
+            --text-color: #e0e0e0;
+            --secondary-text-color: #a0a0c0;
+            --placeholder-color: #5a5a7e;
+            --accent-color: #3a86ff;
+            --accent-rgb: 58, 134, 255;
+            --font-family: 'Inter', sans-serif;
+        }
+
+        .main-app-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .content-wrapper {
+            padding: 30px;
+            flex-grow: 1;
+        }
+
+        .new-todo-container {
+            background-color: var(--card-bg-color);
+            border-radius: 12px;
+            padding: 30px 40px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            max-width: 700px;
+            margin: 20px auto;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .new-todo-title {
+            font-size: 2em;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 30px;
+            text-align: left;
+            padding-bottom: 15px;
+        }
+
+        .new-todo-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.9em;
+            color: var(--secondary-text-color);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--input-bg-color);
+            color: var(--text-color);
+            font-size: 1em;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-input::placeholder,
+        .form-textarea::placeholder {
+            color: var(--placeholder-color);
+        }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.3);
+        }
+
+        .form-input[type="text"].datepicker {
+            background-color: var(--input-bg-color);
+            cursor: pointer;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .priority-options {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .priority-radio {
+            opacity: 0;
+            position: absolute;
+            width: 0;
+            height: 0;
+        }
+
+        .priority-label {
+            position: relative;
+            padding-left: 30px;
+            cursor: pointer;
+            font-size: 1em;
+            color: var(--secondary-text-color);
+            transition: color 0.2s ease;
+        }
+
+        .priority-label:hover {
+            color: var(--text-color);
+        }
+
+        .priority-label::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            background-color: var(--input-bg-color);
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+
+        .priority-label::after {
+            content: '';
+            position: absolute;
+            left: 3px;
+            top: 50%;
+            transform: translateY(-50%) scale(0);
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+            transition: all 0.2s ease;
+        }
+
+        .priority-radio:checked+.priority-label::before {
+            border-color: var(--accent-color);
+        }
+
+        .priority-radio:checked+.priority-label::after {
+            transform: translateY(-50%) scale(1);
+        }
+
+        .priority-radio:focus+.priority-label::before {
+            box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.3);
+        }
+
+        #priorityLow:checked+.priority-label {
+            color: #34d399;
+        }
+
+        #priorityMedium:checked+.priority-label {
+            color: #f59e0b;
+        }
+
+        #priorityHigh:checked+.priority-label {
+            color: #ef4444;
+        }
+
+        #priorityLow:checked+.priority-label::after {
+            background-color: #34d399;
+        }
+
+        #priorityMedium:checked+.priority-label::after {
+            background-color: #f59e0b;
+        }
+
+        #priorityHigh:checked+.priority-label::after {
+            background-color: #ef4444;
+        }
+
+        .btn-create-todo {
+            align-self: flex-end;
+            margin-top: 20px;
+            padding: 12px 25px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            border: none;
+            background-color: var(--accent-color);
+            color: #ffffff;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.2);
+        }
+
+        .btn-create-todo:hover {
+            background-color: #2978f0;
+            box-shadow: 0 6px 16px rgba(var(--accent-rgb), 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-create-todo:active {
+            transform: translateY(0);
+        }
+
+        .btn-create-todo i {
+            font-size: 1em;
+        }
+
+        .flatpickr-calendar {
+            background: var(--card-bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            font-family: var(--font-family);
+        }
+
+        .flatpickr-months .flatpickr-month {
+            color: var(--text-color);
+            fill: var(--text-color);
+        }
+
+        .flatpickr-months .flatpickr-prev-month,
+        .flatpickr-months .flatpickr-next-month {
+            color: var(--secondary-text-color);
+            fill: var(--secondary-text-color);
+        }
+
+        .flatpickr-months .flatpickr-prev-month:hover,
+        .flatpickr-months .flatpickr-next-month:hover {
+            color: var(--accent-color);
+            fill: var(--accent-color);
+        }
+
+        .flatpickr-weekdays {
+            background: var(--sidebar-bg-color);
+        }
+
+        span.flatpickr-weekday {
+            color: var(--secondary-text-color);
+            font-weight: 500;
+        }
+
+        .flatpickr-day {
+            color: var(--secondary-text-color);
+            border-color: transparent;
+        }
+
+        .flatpickr-day:hover,
+        .flatpickr-day:focus {
+            background: var(--input-bg-color);
+            border-color: var(--input-bg-color);
+            color: var(--text-color);
+        }
+
+        .flatpickr-day.today {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .flatpickr-day.today:hover,
+        .flatpickr-day.today:focus {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+            color: #fff;
+        }
+
+        .flatpickr-day.selected,
+        .flatpickr-day.startRange,
+        .flatpickr-day.endRange {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+            color: #fff;
+        }
+
+        .numInputWrapper .numInput {
+            background: var(--input-bg-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .flatpickr-time {
+            border-top: 1px solid var(--border-color);
+        }
+
+        .flatpickr-time .numInputWrapper span:hover {
+            background: var(--input-bg-color);
+        }
+
+        .flatpickr-time .flatpickr-am-pm:hover {
+            background: var(--input-bg-color);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .fake-sidebar {
+                display: none;
+            }
+
+            .new-todo-container {
+                margin: 20px;
+                padding: 20px;
+            }
+
+            .new-todo-title {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+
+<body class="font-sans">
+
+    <div class="main-app-content">
+        <div class="content-wrapper">
+            <div class="new-todo-container">
+                <h2 class="new-todo-title">New Todo</h2>
+
+                <form action="#" method="post" id="todoForm" class="new-todo-form">
+
+                    <div class="form-group">
+                        <label for="todoTitle" class="form-label">Title</label>
+                        <input type="text" id="todoTitle" name="title" class="form-input" placeholder="Todo Title"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="todoDescription" class="form-label">Description</label>
+                        <textarea id="todoDescription" name="description" class="form-textarea"
+                            placeholder="Description..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Priority</label>
+                        <div class="priority-options">
+                            <input type="radio" id="priorityLow" name="priority" value="low" class="priority-radio"
+                                checked>
+                            <label for="priorityLow" class="priority-label">Low</label>
+
+                            <input type="radio" id="priorityMedium" name="priority" value="medium"
+                                class="priority-radio">
+                            <label for="priorityMedium" class="priority-label">Medium</label>
+
+                            <input type="radio" id="priorityHigh" name="priority" value="high" class="priority-radio">
+                            <label for="priorityHigh" class="priority-label">High</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="todoDueDate" class="form-label">Due Date</label>
+                        <input type="text" id="todoDueDate" name="due_date" class="form-input datepicker"
+                            placeholder="Pick a date...">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="todoList" class="form-label">List</label>
+                        <input type="text" id="todoList" name="list" class="form-input"
+                            placeholder="Which list? (ex. Today, Travel)">
+                    </div>
+
+                    <button type="submit" class="btn-create-todo">
+                        <i class="fa-solid fa-plus"></i>
+                        Create Todo
+                    </button>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="/scripts/todoFetcher.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        flatpickr("#todoDueDate", {
+            dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "d F Y",
+        });
+    </script>
+
+</body>
+
+</html>

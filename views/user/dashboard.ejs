@@ -8,6 +8,22 @@
     <%- include('../partials/head.ejs') %>
         <link rel="stylesheet" href="/styles/dashboard.css">
         <link rel="stylesheet" href="/styles/todo.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+
+        <!-- Tailwind CSS -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: {
+                            sans: ['Inter', 'sans-serif'],
+                        },
+                    },
+                },
+            }
+        </script>
 </head>
 
 <body>
@@ -24,14 +40,19 @@
             <main class="main-content">
                 <% if (page==='todos' ) { %>
                     <%- include('./todos-content.ejs', { todos: todos }) %>
-                        <% } else if (page==='dashboard' ) { %>
-                            <%- include('./dashboard-content.ejs') %>
-                                <% } else { %>
-                                    <%- include('err_pages/404.ejs') %>
-                                        <% } %>
+                <% } else if (page==='dashboard' ) { %>
+                    <%- include('./dashboard-content.ejs') %>
+                <% } else if (page==='addTodo' ) { %>
+                    <%- include('./add-todo.ejs') %>
+                <% } else if (page==='updateTodo') { %>
+                     <%- include('./update-todo.ejs') %>
+                <% } else { %>
+                    <%- include('../err_pages/404.ejs') %>
+                <% } %>
             </main>
 
             <script src="/scripts/logout.js" defer></script>
+            <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
             <script>
                 document.addEventListener('DOMContentLoaded', () => {
 
@@ -96,6 +117,12 @@
                             }
                         });
                     }
+                });
+
+                flatpickr("#todoDueDate", {
+                    dateFormat: "Y-m-d",
+                    altInput: true,
+                    altFormat: "d F Y",
                 });
             </script>
 </body>

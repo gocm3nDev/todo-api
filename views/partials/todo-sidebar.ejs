@@ -2,7 +2,7 @@
 <button id="taskToggleSidebar" class="fa-solid fa-bars"></button>
 
 <aside class="task-sidebar" id="taskSidebar">
-    <a class="task-sidebar-logo" href="/">
+    <a class="task-sidebar-logo" style="user-select: none;">
         <i class="fa-solid fa-check-double"></i>
         <span>List Manager</span>
     </a>
@@ -17,12 +17,13 @@
 
                     <label for="list-all-todos" class="task-nav-link">
                         <i class="fa-solid fa-inbox"></i>
-                        <span>All Todos</span>
+                        <span style="user-select: none;">All Todos</span>
                     </label>
             </li>
 
 
-            <% lists.forEach(list=> { %>
+            <% if (lists && lists.length > 0) { %>
+             <% lists.forEach(list=> { %>
                 <li class="task-nav-item">
                     <input type="radio" id="list-<%= list.replace(/\s/g, '-') %>" name="getSelectedList"
                         value="<%= list %>" class="list-radio-input"
@@ -31,12 +32,13 @@
 
                         <label for="list-<%= list.replace(/\s/g, '-') %>" class="task-nav-link">
                             <i class="fa-solid fa-star"></i>
-                            <span>
+                            <span style="user-select: none;">
                                 <%= list %>
                             </span>
                         </label>
                 </li>
                 <% }) %>
+            <% } %>
         </ul>
     </form>
 </aside>

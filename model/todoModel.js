@@ -20,28 +20,28 @@ const Todo = {
     },
     getTodoById: async (todo_id) => {
         try {
-            const res = pool.query(`SELECT * FROM public."todos" WHERE todo_id=$1`, [todo_id]);
+            const res = await pool.query(`SELECT * FROM public."todos" WHERE todo_id=$1`, [todo_id]);
             return (await res).rows[0];
         } catch (err) {
             console.log(`Error: ${err}`);
         }
     },
-    removeTodo: async (todo_id) => {
+    removeTodo: async (todo_id) => { // soft delete
         try {
-            const res = pool.query(`UPDATE public."todos" SET isActive=false WHERE todo_id=$1`, [todo_id]);
-            return (await res).rows;
+            const res = await pool.query(`UPDATE public."todos" SET "isActive"=false WHERE todo_id=$1`, [todo_id]);
+            return res;
         } catch (err) {
             console.log(`Error: ${err}`);
         }
     },
-    addTodo: async ({ user_id, title, description, status, priority, due_date, isActive = true }) => {
+    insertTodo: async ({ user_id, title, description, status, priority, due_date, list }) => {
         try {
             const res = await pool.query(
                 `INSERT INTO public."todos" 
-                (user_id, title, description, status, priority, due_date, isActive)
+                (user_id, title, description, status, priority, due_date, list)
                 VALUES ($1, $2, $3, $4, $5, $6, $7)
                 RETURNING *;`,
-                [user_id, title, description, status, priority, due_date, isActive]
+                [user_id, title, description, status, priority, due_date, list]
             );
 
             return res.rows[0];
@@ -55,7 +55,7 @@ const Todo = {
             const result = await pool.query(`
                 SELECT ARRAY_AGG(DISTINCT list) AS lists
                 FROM public."todos"
-                WHERE user_id = $1
+                WHERE user_id = $1 AND "isActive"=true
             `, [user_id]);
 
             const lists = result.rows[0].lists;
@@ -67,7 +67,12 @@ const Todo = {
     },
     getTodosByList: async (user_id, list) => {
         try {
-            const result = await pool.query(`SELECT * FROM public."todos" WHERE user_id=$1 AND list=$2`, [user_id, list]);
+            let result;
+            if (list === 'allTodos') {
+                result = await pool.query(`SELECT * FROM public."todos" WHERE user_id=$1`, [user_id]);
+            } else {
+                result = await pool.query(`SELECT * FROM public."todos" WHERE user_id=$1 AND list=$2`, [user_id, list]);
+            }
 
             return result.rows;
         } catch (err) {
