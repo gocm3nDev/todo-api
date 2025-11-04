@@ -15,5 +15,6 @@ router.get('/remove-todo/:id', jwtMiddleware, todoController.removeTodo);
 
 // Todo update endpoints
 router.get('/update-todo/:id', jwtMiddleware, todoController.updateTodoGet);
+router.post('/update-todo/:id', jwtMiddleware, todoController.updateTodoPost);
 
 module.exports = router;

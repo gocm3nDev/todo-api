@@ -79,6 +79,25 @@ const Todo = {
             console.error(`Error while getting todos. Error: ${err}`);
             throw err;
         }
+    },
+    updateTodo: async (todo_id, user_id, title, description, priority, due_date, list) => {
+        try {
+            const now = new Date();
+            const result = await pool.query(`UPDATE public."todos"
+            SET title = $1,
+                description = $2,
+                priority = $3,
+                due_date = $4,
+                updated_at = $5,
+                list = $6
+            WHERE todo_id = $7
+            AND user_id = $8;`, [title, description, priority, due_date, now, list, todo_id, user_id]);
+
+            return result.rows;
+        } catch (err) {
+            console.log(`Error by model. ${err}`);
+            throw err;
+        }
     }
 }
 

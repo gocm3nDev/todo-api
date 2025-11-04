@@ -124,3 +124,19 @@ exports.updateTodoGet = async (req, res) => {
 
     return res.render('user/dashboard', { page: 'updateTodo', lists: lists, user: user, todo: todo });
 }
+
+exports.updateTodoPost = async (req, res) => {
+    const { title, description, priority, due_date, list } = req.body;
+    const { id } = req.params;
+
+    const userId = req.user.id;
+
+    try {
+        const response = await model.updateTodo(id, userId, title, description, priority, due_date, list);
+
+        return res.status(200).json({ 'status': 'ok' });
+    } catch (err) {
+        console.error(`Error: ${err}`);
+        return res.status(400);
+    }
+}

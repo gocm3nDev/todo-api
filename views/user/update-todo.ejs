@@ -358,10 +358,12 @@
 
                 <form action="#" method="post" id="todoForm" class="new-todo-form">
 
+                    <input type="hidden" name="todo_id" id="todoId" value="<%= todo.todo_id %>">
+
                     <div class="form-group">
                         <label for="todoTitle" class="form-label">Title</label>
-                        <input type="text" id="todoTitle" name="title" class="form-input" value="<%= todo.title %>" placeholder="Todo Title"
-                            required>
+                        <input type="text" id="todoTitle" name="title" class="form-input" value="<%= todo.title %>"
+                            placeholder="Todo Title" required>
                     </div>
 
                     <div class="form-group">
@@ -373,29 +375,30 @@
                     <div class="form-group">
                         <label class="form-label">Priority</label>
                         <div class="priority-options">
-                            <input type="radio" id="priorityLow" name="priority" value="low" class="priority-radio"
-                                <% if (todo.priority === 'low') { %>
-                                 checked
-                                <% } %>>
-                            <label for="priorityLow" class="priority-label">Low</label>
+                            <input type="radio" id="priorityLow" name="priority" value="low" class="priority-radio" <%
+                                if (todo.priority==='low' ) { %>
+                            checked
+                            <% } %>>
+                                <label for="priorityLow" class="priority-label">Low</label>
 
-                            <input type="radio" id="priorityMedium" name="priority" value="medium"
-                                class="priority-radio" <% if (todo.priority === 'medium') { %>
-                                 checked
+                                <input type="radio" id="priorityMedium" name="priority" value="medium"
+                                    class="priority-radio" <% if (todo.priority==='medium' ) { %>
+                                checked
                                 <% } %>>
-                            <label for="priorityMedium" class="priority-label">Medium</label>
+                                    <label for="priorityMedium" class="priority-label">Medium</label>
 
-                            <input type="radio" id="priorityHigh" name="priority" <% if (todo.priority === 'high') { %>
-                             checked
-                            <% } %> value="high" class="priority-radio">
-                            <label for="priorityHigh" class="priority-label">High</label>
+                                    <input type="radio" id="priorityHigh" name="priority" <% if (todo.priority==='high'
+                                        ) { %>
+                                    checked
+                                    <% } %> value="high" class="priority-radio">
+                                        <label for="priorityHigh" class="priority-label">High</label>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="todoDueDate" class="form-label">Due Date</label>
-                        <input type="text" id="todoDueDate" name="due_date" value="<%= todo.due_date %>" class="form-input datepicker"
-                            placeholder="Pick a date...">
+                        <input type="text" id="todoDueDate" name="due_date" value="<%= todo.due_date %>"
+                            class="form-input datepicker" placeholder="Pick a date...">
                     </div>
 
                     <div class="form-group">
@@ -416,6 +419,48 @@
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('todoForm');
+            const todo_id = document.getElementById('todoId').value;
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const fd = new FormData(form);
+
+                try {
+                    const title = fd.get('title');
+                    const description = fd.get('description');
+                    const priority = fd.get('priority');
+                    const due_date = fd.get('due_date');
+                    const list = fd.get('list');
+
+                    const res = await fetch(`/todo/update-todo/${todo_id}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ title, description, priority, due_date, list })
+                    });
+
+                    if (!res.ok) {
+                        throw new Error(`Server responded with status ${res.status}`);
+                    }
+
+                    const data = await res.json();
+
+                    console.log(data.success);
+
+                    if (data.success) {
+                        window.location.href = '/user/my-todos';
+                    } else {
+                        alert('Error: ' + (data.message || 'Unknown error'));
+                    }
+                } catch (err) {
+                    console.error(`An error occured while fetching data. ${err}`);
+                }
+
+            });
+        });
+
         flatpickr("#todoDueDate", {
             dateFormat: "Y-m-d",
             altInput: true,
